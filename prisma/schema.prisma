@@ -1,0 +1,38 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  salaries  Salary[]
+}
+model Company {
+  id       String   @id @default(uuid())
+  name     String   @unique
+  aliases  String[]
+  salaries Salary[]
+}
+
+model Salary {
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  id             String   @id @default(uuid())
+  companyId      String
+  company        Company  @relation(fields: [companyId], references: [id])
+  rawTitle       String
+  rawLevel       String
+  normalizedRole String
+  location       String
+  baseSalary     Decimal  @db.Decimal(12, 2)
+  stockGrant     Decimal  @db.Decimal(12, 2)
+  bonus          Decimal  @db.Decimal(12, 2)
+  totalComp      Decimal  @db.Decimal(12, 2)
+  createdAt      DateTime @default(now())
+}
